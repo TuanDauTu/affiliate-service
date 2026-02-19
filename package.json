@@ -4,7 +4,8 @@
   "description": "Standalone Affiliate System Microservice",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node node_modules/prisma/build/index.js migrate deploy && node src/server.js",
+    "start:local": "node src/server.js",
     "dev": "nodemon src/server.js",
     "migrate": "npx prisma migrate dev",
     "migrate:prod": "npx prisma migrate deploy",
