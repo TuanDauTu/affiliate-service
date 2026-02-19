@@ -1,0 +1,844 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Dashboard - Sức Khỏe Tài Chính</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0a0f1e;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-card-hover: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --teal: #2dd4bf;
+            --teal-dark: #0d9488;
+            --yellow: #fbbf24;
+            --green: #10b981;
+            --red: #f43f5e;
+            --blue: #60a5fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(10, 15, 30, 0.9);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--teal), var(--blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .code-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--teal);
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        /* ===== LOGIN SCREEN ===== */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 65px);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(12px);
+        }
+
+        .login-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .login-card h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard {
+            display: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section-header {
+            padding: 32px 0 24px;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            transition: background 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .stat-card.blue::before {
+            background: var(--blue);
+        }
+
+        .stat-card.yellow::before {
+            background: var(--yellow);
+        }
+
+        .stat-card.green::before {
+            background: var(--green);
+        }
+
+        .stat-card.teal::before {
+            background: var(--teal);
+        }
+
+        .stat-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-card.blue .stat-value {
+            color: var(--blue);
+        }
+
+        .stat-card.yellow .stat-value {
+            color: var(--yellow);
+        }
+
+        .stat-card.green .stat-value {
+            color: var(--green);
+        }
+
+        .stat-card.teal .stat-value {
+            color: var(--teal);
+        }
+
+        .stat-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== REFERRAL LINK BOX ===== */
+        .ref-link-box {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.15), rgba(45, 212, 191, 0.08));
+            border: 1px solid rgba(45, 212, 191, 0.25);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .ref-link-box .link-label {
+            font-size: 0.85rem;
+            color: var(--teal);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .ref-link-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .ref-link-input input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            color: var(--teal);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .btn-copy {
+            background: rgba(45, 212, 191, 0.15);
+            border: 1px solid rgba(45, 212, 191, 0.3);
+            color: var(--teal);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-copy:hover {
+            background: rgba(45, 212, 191, 0.25);
+        }
+
+        /* ===== TABLE ===== */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 14px 24px;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 24px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-pending {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--yellow);
+        }
+
+        .badge-approved {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--green);
+        }
+
+        .badge-paid {
+            background: rgba(96, 165, 250, 0.15);
+            color: var(--blue);
+        }
+
+        .badge-rejected {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--red);
+        }
+
+        /* ===== PAYOUT SECTION ===== */
+        .payout-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+
+        .payout-section h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .payout-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .payout-row input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        .payout-row input:focus {
+            border-color: var(--green);
+        }
+
+        .btn-payout {
+            background: linear-gradient(135deg, #059669, var(--green));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+
+        .btn-payout:hover {
+            opacity: 0.9;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        /* ===== LOADING ===== */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .payout-row {
+                flex-direction: column;
+            }
+
+            .ref-link-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">🩺 Affiliate Portal</div>
+        <div style="display:flex;align-items:center;gap:10px">
+            <div class="code-badge" id="header-code" style="display:none"></div>
+            <button id="logoutBtn" onclick="logout()"
+                style="display:none;background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);color:#f43f5e;padding:7px 14px;border-radius:50px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;"
+                onmouseover="this.style.background='rgba(244,63,94,.2)'"
+                onmouseout="this.style.background='rgba(244,63,94,.12)'">↩ Đăng xuất</button>
+        </div>
+    </header>
+
+    <!-- LOGIN SCREEN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-icon">🔑</div>
+            <h2>Đăng nhập Portal</h2>
+            <p>Nhập mã giới thiệu của bạn để xem thống kê hoa hồng và quản lý tài khoản.</p>
+            <div class="input-group">
+                <input type="text" id="codeInput" placeholder="Nhập mã CTV (VD: DEMO001)" autocomplete="off" autofocus>
+            </div>
+            <button class="btn-primary" id="loginBtn" onclick="loginAffiliate()">
+                Xem Dashboard
+            </button>
+            <p id="loginError" style="color: #f43f5e; margin-top: 12px; font-size:0.85rem; display:none"></p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboardScreen">
+        <div class="container">
+
+            <!-- Section Header -->
+            <div class="section-header">
+                <h2>Dashboard Cộng Tác Viên</h2>
+                <p id="dash-subtitle">Xem thống kê và quản lý hoa hồng của bạn</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-label">Tổng Clicks</div>
+                    <div class="stat-value" id="stat-clicks">—</div>
+                    <div class="stat-sub" id="stat-conversion">Đang tải...</div>
+                </div>
+                <div class="stat-card yellow">
+                    <div class="stat-label">Hoa hồng chờ duyệt</div>
+                    <div class="stat-value" id="stat-pending">—</div>
+                    <div class="stat-sub" id="stat-pending-count">Đang tải...</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">Số dư ví</div>
+                    <div class="stat-value" id="stat-balance">—</div>
+                    <div class="stat-sub">Sẵn sàng rút tiền</div>
+                </div>
+                <div class="stat-card teal">
+                    <div class="stat-label">Đã thanh toán</div>
+                    <div class="stat-value" id="stat-paid">—</div>
+                    <div class="stat-sub">Tổng đã rút</div>
+                </div>
+            </div>
+
+            <!-- Referral Link -->
+            <div class="ref-link-box">
+                <div class="ref-link-input">
+                    <div class="link-label">Link giới thiệu của bạn</div>
+                    <input type="text" id="refLinkInput" readonly>
+                </div>
+                <button class="btn-copy" onclick="copyRefLink()">📋 Copy Link</button>
+            </div>
+
+            <!-- Conversion Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>📋 Lịch sử Hoa hồng</h3>
+                    <button onclick="loadConversions()"
+                        style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;">
+                        🔄 Làm mới
+                    </button>
+                </div>
+                <div id="conversionTableWrapper">
+                    <div class="empty-state">
+                        <div class="icon">📭</div>
+                        <p>Chưa có đơn hàng nào</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payout Request -->
+            <div class="payout-section">
+                <h3>💸 Yêu cầu rút tiền</h3>
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:16px">
+                    Số tiền tối thiểu: <strong style="color:var(--green)">500.000đ</strong>
+                </p>
+                <div class="payout-row">
+                    <input type="number" id="payoutAmount" placeholder="Nhập số tiền muốn rút (VD: 500000)"
+                        min="500000">
+                    <button class="btn-payout" onclick="requestPayout()">Yêu cầu rút tiền</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API = 'https://affiliate.suckhoetaichinh.vn/api/v1';
+        const GO_BASE = 'https://affiliate.suckhoetaichinh.vn/go';   // server-side redirect
+        const STORAGE_KEY = 'affiliate_ctv_code';
+        let currentCode = '';
+        let currentProductSlug = '';  // slug của product affiliate đang thuộc về
+
+        // ====== HELPERS ======
+        function showToast(msg, type = 'info') {
+            const t = document.getElementById('toast');
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            t.innerHTML = `${icons[type] || ''} ${msg}`;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function formatVND(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
+            return n.toLocaleString('vi-VN') + 'đ';
+        }
+
+        // ====== AUTO-LOGIN KHI F5 ======
+        (async function autoLogin() {
+            const savedCode = localStorage.getItem(STORAGE_KEY);
+            if (!savedCode) return; // Chưa từng login → hiện form bình thường
+
+            try {
+                const res = await fetch(`${API}/affiliate/dashboard?code=${savedCode}`);
+                const data = await res.json();
+                if (!res.ok) {
+                    // Token hết hạn / mã không còn hợp lệ → xoá và hiện form
+                    localStorage.removeItem(STORAGE_KEY);
+                    return;
+                }
+                // Restore session thành công
+                currentCode = savedCode;
+                renderDashboard(data);
+                loadConversions();
+                showDashboard(savedCode);
+            } catch (e) {
+                // Không thể kết nối → giữ form login (offline-safe)
+                console.warn('Auto-login skipped (offline?):', e.message);
+            }
+        })();
+
+        // ====== LOGIN ======
+        async function loginAffiliate() {
+            const code = document.getElementById('codeInput').value.trim().toUpperCase();
+            const errorEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+
+            if (!code) { errorEl.textContent = 'Vui lòng nhập mã CTV!'; errorEl.style.display = 'block'; return; }
+
+            btn.innerHTML = '<span class="spinner"></span>';
+            btn.disabled = true;
+            errorEl.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API}/affiliate/dashboard?code=${code}`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Mã không hợp lệ');
+
+                // ✅ Lưu vào localStorage để F5 không cần login lại
+                localStorage.setItem(STORAGE_KEY, code);
+
+                currentCode = code;
+                renderDashboard(data);
+                loadConversions();
+                showDashboard(code);
+
+            } catch (e) {
+                errorEl.textContent = e.message;
+                errorEl.style.display = 'block';
+            } finally {
+                btn.innerHTML = 'Xem Dashboard';
+                btn.disabled = false;
+            }
+        }
+
+        function showDashboard(code) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('header-code').textContent = code;
+            document.getElementById('header-code').style.display = 'flex';
+            document.getElementById('logoutBtn').style.display = 'block';
+        }
+
+        // ====== LOGOUT ======
+        function logout() {
+            localStorage.removeItem(STORAGE_KEY);
+            currentCode = '';
+            document.getElementById('dashboardScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('header-code').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('codeInput').value = '';
+            showToast('Đã đăng xuất', 'info');
+        }
+
+        // ====== RENDER DASHBOARD ======
+        function renderDashboard(data) {
+            const { affiliate, stats, commissions } = data;
+
+            document.getElementById('dash-subtitle').textContent =
+                `Xin chào ${affiliate.email} | Trạng thái: ${affiliate.status === 'active' ? '🟢 Active' : '🔴 Inactive'}`;
+
+            document.getElementById('stat-clicks').textContent = stats.totalClicks.toLocaleString();
+            document.getElementById('stat-conversion').textContent = `Tỷ lệ chuyển đổi: ${stats.conversionRate}`;
+
+            document.getElementById('stat-pending').textContent = formatVND(commissions.pending.amount);
+            document.getElementById('stat-pending-count').textContent = `${commissions.pending.count} đơn đang chờ`;
+
+            document.getElementById('stat-balance').textContent = formatVND(affiliate.balance);
+            document.getElementById('stat-paid').textContent = formatVND(commissions.totalPaid);
+
+            // ─── Link giới thiệu — dùng /go/ endpoint (server-side tracking) ───
+            // Lấy productSlug từ conversion đầu tiên, hoặc fallback về sktc-app1
+            const productSlug = data.affiliate.productSlug || currentProductSlug || 'sktc-app1';
+            currentProductSlug = productSlug;
+
+            const refLink = `${GO_BASE}/${productSlug}?ref=${currentCode}`;
+            document.getElementById('refLinkInput').value = refLink;
+        }
+
+        async function loadConversions() {
+            const wrapper = document.getElementById('conversionTableWrapper');
+            wrapper.innerHTML = '<div class="empty-state"><span class="spinner"></span></div>';
+
+            try {
+                const res = await fetch(`${API}/affiliate/conversions?code=${currentCode}`);
+                const { data } = await res.json();
+
+                if (!data || data.length === 0) {
+                    wrapper.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Chưa có đơn hàng nào từ link của bạn</p></div>';
+                    return;
+                }
+
+                const rows = data.map(c => `
+                <tr>
+                    <td style="font-family:monospace;color:var(--text-muted);font-size:0.8rem">${c.orderId}</td>
+                    <td style="font-weight:600">${(c.orderAmount).toLocaleString('vi-VN')}đ</td>
+                    <td style="color:var(--green);font-weight:700">+${(c.commissionAmount).toLocaleString('vi-VN')}đ</td>
+                    <td><span class="badge badge-${c.status}">${statusLabel(c.status)}</span></td>
+                    <td style="color:var(--text-muted);font-size:0.8rem">${new Date(c.createdAt).toLocaleDateString('vi-VN')}</td>
+                </tr>
+            `).join('');
+
+                wrapper.innerHTML = `
+                <table>
+                    <thead><tr>
+                        <th>Order ID</th><th>Giá trị đơn</th><th>Hoa hồng</th><th>Trạng thái</th><th>Ngày</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+            } catch (e) {
+                wrapper.innerHTML = `<div class="empty-state"><p style="color:var(--red)">Lỗi tải dữ liệu: ${e.message}</p></div>`;
+            }
+        }
+
+        function statusLabel(s) {
+            return { pending: '⏳ Chờ duyệt', approved: '✅ Đã duyệt', paid: '💰 Đã trả', rejected: '❌ Từ chối' }[s] || s;
+        }
+
+        async function requestPayout() {
+            const amount = parseInt(document.getElementById('payoutAmount').value);
+            if (!amount || amount < 500000) { showToast('Số tiền tối thiểu là 500.000đ', 'error'); return; }
+
+            try {
+                const res = await fetch(`${API}/affiliate/payouts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: currentCode, amount })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+
+                showToast(`Đã gửi yêu cầu rút ${amount.toLocaleString('vi-VN')}đ thành công!`, 'success');
+                document.getElementById('payoutAmount').value = '';
+
+                const dashRes = await fetch(`${API}/affiliate/dashboard?code=${currentCode}`);
+                renderDashboard(await dashRes.json());
+
+            } catch (e) {
+                showToast(e.message || 'Có lỗi xảy ra!', 'error');
+            }
+        }
+
+        function copyRefLink() {
+            const link = document.getElementById('refLinkInput').value;
+            navigator.clipboard.writeText(link).then(() => showToast('Đã copy link giới thiệu!', 'success'));
+        }
+
+        // Enter key to login
+        document.getElementById('codeInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') loginAffiliate();
+        });
+    </script>
+</body>
+
+</html>

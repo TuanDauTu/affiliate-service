@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel – Affiliate System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #070c18;
+            --bg2: #0d1526;
+            --card: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.07);
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --teal: #2dd4bf;
+            --teal-dk: #0d9488;
+            --yellow: #fbbf24;
+            --green: #10b981;
+            --red: #f43f5e;
+            --blue: #60a5fa;
+            --purple: #a78bfa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ====== SIDEBAR ====== */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-logo .brand {
+            font-size: 1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--teal), var(--blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-logo .sub {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 24px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--muted);
+            border-left: 3px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item.active {
+            color: var(--teal);
+            border-left-color: var(--teal);
+            background: rgba(45, 212, 191, 0.06);
+        }
+
+        .nav-item .icon {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* ====== MAIN ====== */
+        .main {
+            flex: 1;
+            overflow-x: hidden;
+        }
+
+        .topbar {
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(7, 12, 24, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .refresh-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.15s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ====== CONTENT ====== */
+        .content {
+            padding: 28px 32px;
+        }
+
+        /* ====== OVERVIEW CARDS ====== */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .ov-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .ov-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 10px;
+        }
+
+        .ov-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .ov-card.teal .ov-val {
+            color: var(--teal);
+        }
+
+        .ov-card.blue .ov-val {
+            color: var(--blue);
+        }
+
+        .ov-card.yellow .ov-val {
+            color: var(--yellow);
+        }
+
+        .ov-card.green .ov-val {
+            color: var(--green);
+        }
+
+        .ov-card.purple .ov-val {
+            color: var(--purple);
+        }
+
+        /* ====== TABLE WRAPPER ====== */
+        .table-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+
+        .tw-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tw-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .search-input {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            width: 240px;
+            transition: border 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--teal);
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 860px;
+        }
+
+        thead tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 20px;
+            font-size: 0.875rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover td {
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .badge-active {
+            background: rgba(16, 185, 129, .15);
+            color: var(--green);
+        }
+
+        .badge-inactive {
+            background: rgba(244, 63, 94, .12);
+            color: var(--red);
+        }
+
+        .code-tag {
+            font-family: monospace;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--teal);
+            letter-spacing: 1px;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+
+        .toggle-btn.deactivate:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        /* ====== PAGINATION ====== */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .page-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .page-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            transition: all 0.15s;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-btn:not(:disabled):hover {
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+
+        /* ====== ADD AFFILIATE MODAL ====== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .modal-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--teal);
+        }
+
+        .field select option {
+            background: var(--bg2);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-create {
+            flex: 1;
+            background: linear-gradient(135deg, var(--teal-dk), var(--teal));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-cancel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ====== EMPTY + LOADING ====== */
+        .empty {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--muted);
+        }
+
+        .empty .ei {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-top-color: var(--teal);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ====== LIVE INDICATOR ====== */
+        .live-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: live-pulse 1.5s ease-in-out infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes live-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.7);
+            }
+        }
+
+        .live-label {
+            font-size: 0.75rem;
+            color: var(--green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .last-updated {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-left: 4px;
+        }
+
+        /* Flash animation khi giá trị thay đổi */
+        @keyframes cell-flash {
+            0% {
+                background: rgba(45, 212, 191, 0.2);
+            }
+
+            100% {
+                background: transparent;
+            }
+        }
+
+        .flash td {
+            animation: cell-flash 1s ease-out;
+        }
+
+        /* ====== TOAST ====== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 999;
+            max-width: 300px;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, .1);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="brand">🩺 Affiliate Admin</div>
+                <div class="sub">suckhoetaichinh.vn</div>
+            </div>
+            <nav>
+                <div class="nav-item active" onclick="switchTab('users')"><span class="icon">👥</span> Danh sách CTV
+                </div>
+                <div class="nav-item" onclick="switchTab('conversions')"><span class="icon">💰</span> Duyệt Hoa hồng
+                </div>
+                <div class="nav-item" onclick="switchTab('products')"><span class="icon">📦</span> Sản phẩm</div>
+                <div class="nav-item" onclick="switchTab('overview')"><span class="icon">📊</span> Tổng quan</div>
+                <div class="nav-item" onclick="window.open('/dashboard','_blank')"><span class="icon">🔗</span> CTV
+                    Portal</div>
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main">
+            <!-- Topbar -->
+            <div class="topbar">
+                <h1 id="topbar-title">👥 Danh sách Cộng Tác Viên</h1>
+                <div class="topbar-right">
+                    <div class="live-label">
+                        <span class="live-dot"></span>
+                        LIVE
+                        <span class="last-updated" id="last-updated">—</span>
+                    </div>
+                    <button class="refresh-btn" onclick="manualRefresh()">🔄 Refresh</button>
+                    <button class="refresh-btn" onclick="openAddModal()"
+                        style="color:var(--teal);border-color:rgba(45,212,191,.3)">+ Thêm CTV</button>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <!-- ===== OVERVIEW TAB ===== -->
+                <div id="tab-overview" style="display:none">
+                    <div class="overview-grid">
+                        <div class="ov-card teal">
+                            <div class="ov-label">Tổng CTV Active</div>
+                            <div class="ov-val" id="ov-affiliates">—</div>
+                        </div>
+                        <div class="ov-card blue">
+                            <div class="ov-label">Tổng Clicks</div>
+                            <div class="ov-val" id="ov-clicks">—</div>
+                        </div>
+                        <div class="ov-card yellow">
+                            <div class="ov-label">Tổng Conversions</div>
+                            <div class="ov-val" id="ov-conv">—</div>
+                        </div>
+                        <div class="ov-card green">
+                            <div class="ov-label">Doanh thu từ affiliate</div>
+                            <div class="ov-val" id="ov-rev">—</div>
+                        </div>
+                        <div class="ov-card purple">
+                            <div class="ov-label">HH chờ thanh toán</div>
+                            <div class="ov-val" id="ov-payout">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== USERS TAB ===== -->
+                <div id="tab-users">
+                    <div class="table-wrap">
+                        <div class="tw-header">
+                            <h2>Tất cả Cộng Tác Viên</h2>
+                            <input class="search-input" id="searchInput" placeholder="🔍  Tìm email hoặc mã CTV..."
+                                oninput="debounceSearch()">
+                        </div>
+
+                        <div class="table-scroll">
+                            <table id="affiliateTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Email</th>
+                                        <th>Mã CTV</th>
+                                        <th>Trạng thái</th>
+                                        <th>Clicks</th>
+                                        <th>Conversions</th>
+                                        <th>Tổng HH</th>
+                                        <th>Số dư ví</th>
+                                        <th>Ngày tham gia</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="affiliateBody">
+                                    <tr>
+                                        <td colspan="10">
+                                            <div class="empty"><span class="spinner"></span></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="pagination">
+                            <span id="pag-info">Đang tải...</span>
+                            <div class="page-btns">
+                                <button class="page-btn" id="btnPrev" onclick="changePage(-1)" disabled>← Trước</button>
+                                <button class="page-btn" id="btnNext" onclick="changePage(1)">Sau →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ===== CONVERSIONS TAB ===== -->
+                <div id="tab-conversions" style="display:none">
+                    <div class="table-wrap">
+                        <div class="tw-header">
+                            <h2>💰 Duyệt Hoa hồng</h2>
+                            <select id="convStatusFilter" onchange="loadConversions(1)"
+                                style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:0.85rem;cursor:pointer;">
+                                <option value="">Tất cả</option>
+                                <option value="pending">⏳ Chờ duyệt</option>
+                                <option value="approved">✅ Đã duyệt</option>
+                                <option value="rejected">❌ Từ chối</option>
+                            </select>
+                        </div>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>CTV</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Giá trị đơn</th>
+                                        <th>Hoa hồng</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="convBody">
+                                    <tr>
+                                        <td colspan="8">
+                                            <div class="empty"><span class="spinner"></span></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination">
+                            <span id="conv-pag-info">...</span>
+                            <div class="page-btns">
+                                <button class="page-btn" id="convPrev" onclick="changeConvPage(-1)" disabled>←
+                                    Trước</button>
+                                <button class="page-btn" id="convNext" onclick="changeConvPage(1)">Sau →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PRODUCTS TAB ===== -->
+                <div id="tab-products" style="display:none">
+                    <div class="table-wrap">
+                        <div class="tw-header">
+                            <h2>📦 Quản lý Sản phẩm</h2>
+                            <button class="refresh-btn" onclick="openProductModal()"
+                                style="color:var(--teal);border-color:rgba(45,212,191,.3)">+ Tạo sản phẩm</button>
+                        </div>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Slug</th>
+                                        <th>Domain</th>
+                                        <th>Loại HH</th>
+                                        <th>Giá trị HH</th>
+                                        <th>Cookie (ngày)</th>
+                                        <th>Trạng thái</th>
+                                        <th>🔑 API Key</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productBody">
+                                    <tr>
+                                        <td colspan="8">
+                                            <div class="empty"><span class="spinner"></span></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /content -->
+        </div><!-- /main -->
+    </div><!-- /layout -->
+
+    <!-- ADD AFFILIATE MODAL -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-box">
+            <h3>➕ Thêm Cộng Tác Viên mới</h3>
+            <div class="field">
+                <label>Email *</label>
+                <input type="email" id="newEmail" placeholder="email@example.com">
+            </div>
+            <div class="field">
+                <label>Mã CTV * <span style="color:var(--muted);font-weight:400">(viết hoa, không dấu)</span></label>
+                <input type="text" id="newCode" placeholder="VD: NGUYENVANA01"
+                    oninput="this.value=this.value.toUpperCase()">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeAddModal()">Huỷ</button>
+                <button class="btn-create" onclick="createAffiliate()">Tạo CTV</button>
+            </div>
+            <p id="addError" style="color:var(--red);font-size:0.82rem;margin-top:10px;display:none"></p>
+        </div>
+    </div>
+
+    <!-- ADD PRODUCT MODAL -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-box" style="max-width:520px">
+            <h3 id="productModalTitle">📦 Tạo sản phẩm mới</h3>
+            <input type="hidden" id="editProductId">
+            <div class="field">
+                <label>Tên sản phẩm *</label>
+                <input type="text" id="pName" placeholder="Sức Khỏe Tài Chính">
+            </div>
+            <div class="field">
+                <label>Slug * <span style="color:var(--muted);font-weight:400">(chữ thường, không dấu)</span></label>
+                <input type="text" id="pSlug" placeholder="sktc-app"
+                    oninput="this.value=this.value.toLowerCase().replace(/\s+/g,'-')">
+            </div>
+            <div class="field">
+                <label>Domain *</label>
+                <input type="text" id="pDomain" placeholder="suckhoetaichinh.vn">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="field">
+                    <label>Loại Hoa hồng *</label>
+                    <select id="pCommType"
+                        style="width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:.9rem;"
+                        onchange="updateCommLabel()">
+                        <option value="percentage">% Phần trăm</option>
+                        <option value="fixed">Cố định (VNĐ)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label id="pCommValueLabel">Giá trị (0–1 nếu %) *</label>
+                    <input type="number" id="pCommValue" placeholder="0.2" step="0.01" min="0">
+                </div>
+            </div>
+            <div class="field">
+                <label>Cookie duration (ngày)</label>
+                <input type="number" id="pCookie" value="30" min="1">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeProductModal()">Huỷ</button>
+                <button class="btn-create" onclick="saveProduct()">Lưu</button>
+            </div>
+            <p id="productError" style="color:var(--red);font-size:0.82rem;margin-top:10px;display:none"></p>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API = 'https://affiliate.suckhoetaichinh.vn/api/v1';
+
+        let currentPage = 1;
+        let totalPages = 1;
+        let searchQuery = '';
+        let debounceTimer = null;
+        let pollTimer = null;
+        let isFirstLoad = true;
+
+        // Lưu snapshot clicks cũ để detect thay đổi
+        let prevClicksMap = {};
+
+        // ====== INIT ======
+        loadData();
+        loadOverview();
+        startPolling();
+
+        // ====== AUTO POLLING 10 giây ======
+        function startPolling() {
+            pollTimer = setInterval(async () => {
+                await silentRefresh();
+            }, 10000); // 10 giây
+        }
+
+        // Silent refresh: không xoá bảng, chỉ cập nhật giá trị
+        async function silentRefresh() {
+            try {
+                const qs = new URLSearchParams({ page: currentPage, limit: 20, search: searchQuery });
+                const res = await fetch(`${API}/admin/affiliates?${qs}`);
+                if (!res.ok) return;
+                const { data, pagination } = await res.json();
+
+                totalPages = pagination.totalPages || 1;
+                document.getElementById('pag-info').textContent =
+                    `Hiển thị ${data.length} / ${pagination.total} CTV (Trang ${pagination.page}/${totalPages})`;
+                document.getElementById('btnPrev').disabled = currentPage <= 1;
+                document.getElementById('btnNext').disabled = currentPage >= totalPages;
+
+                // Cập nhật từng row, flash nếu click thay đổi
+                const tbody = document.getElementById('affiliateBody');
+                const rows = tbody.querySelectorAll('tr[data-id]');
+
+                if (rows.length !== data.length) {
+                    // Số lượng row thay đổi → render lại
+                    renderRows(data);
+                } else {
+                    data.forEach((a, i) => {
+                        const row = tbody.querySelector(`tr[data-id="${a.id}"]`);
+                        if (!row) return;
+
+                        const prevClicks = prevClicksMap[a.id] ?? -1;
+                        const changed = prevClicks !== a.totalClicks;
+
+                        // Update cell values
+                        const cells = row.querySelectorAll('td');
+                        cells[4].innerHTML = `<span style="color:var(--blue);font-weight:600">${a.totalClicks.toLocaleString()}</span>`;
+                        const convRate = a.totalClicks > 0 ? ((a.totalConversions / a.totalClicks) * 100).toFixed(1) : '0';
+                        cells[5].innerHTML = `<span style="color:var(--green);font-weight:600">${a.totalConversions}</span><span style="color:var(--muted);font-size:0.75rem"> (${convRate}%)</span>`;
+                        cells[6].innerHTML = `<span style="color:var(--yellow);font-weight:700">${fmtVND(a.totalCommission)}</span>`;
+                        cells[7].innerHTML = `<span style="color:var(--teal);font-weight:700">${fmtVND(a.balance)}</span>`;
+
+                        if (changed && prevClicks !== -1) {
+                            // Flash row màu xanh nhẹ
+                            row.classList.remove('flash');
+                            void row.offsetWidth; // trigger reflow
+                            row.classList.add('flash');
+                            setTimeout(() => row.classList.remove('flash'), 1000);
+                        }
+
+                        prevClicksMap[a.id] = a.totalClicks;
+                    });
+                }
+
+                updateTimestamp();
+
+            } catch (e) { /* silent */ }
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const t = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            document.getElementById('last-updated').textContent = `· ${t}`;
+        }
+
+        function manualRefresh() {
+            loadData();
+            loadOverview();
+        }
+
+        // ====== FIRST LOAD (with spinner) ======
+        async function loadData() {
+            const tbody = document.getElementById('affiliateBody');
+            if (isFirstLoad) {
+                tbody.innerHTML = `<tr><td colspan="10"><div class="empty"><span class="spinner"></span></div></td></tr>`;
+            }
+
+            try {
+                const qs = new URLSearchParams({ page: currentPage, limit: 20, search: searchQuery });
+                const res = await fetch(`${API}/admin/affiliates?${qs}`);
+                if (!res.ok) throw new Error('Không thể tải dữ liệu');
+                const { data, pagination } = await res.json();
+
+                totalPages = pagination.totalPages || 1;
+                document.getElementById('pag-info').textContent =
+                    `Hiển thị ${data.length} / ${pagination.total} CTV (Trang ${pagination.page}/${totalPages})`;
+                document.getElementById('btnPrev').disabled = currentPage <= 1;
+                document.getElementById('btnNext').disabled = currentPage >= totalPages;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10"><div class="empty"><div class="ei">🔍</div><p>Không tìm thấy kết quả</p></div></td></tr>`;
+                    isFirstLoad = false;
+                    return;
+                }
+
+                renderRows(data);
+                updateTimestamp();
+                isFirstLoad = false;
+
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="10"><div class="empty" style="color:var(--red)">❌ Lỗi: ${e.message}</div></td></tr>`;
+            }
+        }
+
+        function renderRows(data) {
+            const tbody = document.getElementById('affiliateBody');
+            tbody.innerHTML = data.map((a, i) => {
+                const idx = (currentPage - 1) * 20 + i + 1;
+                const convRate = a.totalClicks > 0 ? ((a.totalConversions / a.totalClicks) * 100).toFixed(1) : '0';
+                prevClicksMap[a.id] = a.totalClicks;
+                return `
+                <tr data-id="${a.id}">
+                    <td style="color:var(--muted)">${idx}</td>
+                    <td>
+                        <div style="font-weight:600">${a.email}</div>
+                        <div style="color:var(--muted);font-size:0.75rem">${a.id.slice(0, 8)}...</div>
+                    </td>
+                    <td><span class="code-tag">${a.code}</span></td>
+                    <td><span class="badge badge-${a.status}">${a.status === 'active' ? '🟢 Active' : '🔴 Inactive'}</span></td>
+                    <td style="color:var(--blue);font-weight:600">${a.totalClicks.toLocaleString()}</td>
+                    <td>
+                        <span style="color:var(--green);font-weight:600">${a.totalConversions}</span>
+                        <span style="color:var(--muted);font-size:0.75rem"> (${convRate}%)</span>
+                    </td>
+                    <td style="color:var(--yellow);font-weight:700">${fmtVND(a.totalCommission)}</td>
+                    <td style="color:var(--teal);font-weight:700">${fmtVND(a.balance)}</td>
+                    <td style="color:var(--muted);font-size:0.8rem">${new Date(a.createdAt).toLocaleDateString('vi-VN')}</td>
+                    <td>
+                        <button class="toggle-btn ${a.status === 'active' ? 'deactivate' : ''}"
+                            onclick="toggleStatus('${a.id}','${a.status === 'active' ? 'inactive' : 'active'}')">
+                            ${a.status === 'active' ? '⛔ Vô hiệu' : '✅ Kích hoạt'}
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function loadOverview() {
+            try {
+                const res = await fetch(`${API}/admin/overview`);
+                const d = await res.json();
+                document.getElementById('ov-affiliates').textContent = d.totalAffiliates;
+                document.getElementById('ov-clicks').textContent = d.totalClicks.toLocaleString();
+                document.getElementById('ov-conv').textContent = d.totalConversions;
+                document.getElementById('ov-rev').textContent = fmtVND(d.revenue.totalOrderAmount);
+                document.getElementById('ov-payout').textContent = fmtVND(d.pendingPayouts.totalAmount);
+            } catch (e) { console.warn('Overview error:', e); }
+        }
+
+        async function toggleStatus(id, newStatus) {
+            try {
+                const res = await fetch(`${API}/admin/affiliates/${id}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (!res.ok) throw new Error('Cập nhật thất bại');
+                showToast(`Đã ${newStatus === 'active' ? 'kích hoạt' : 'vô hiệu hoá'} CTV`, 'success');
+                loadData();
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ====== ADD AFFILIATE ======
+        function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('open');
+            document.getElementById('newEmail').value = '';
+            document.getElementById('newCode').value = '';
+            document.getElementById('addError').style.display = 'none';
+        }
+
+        async function createAffiliate() {
+            const email = document.getElementById('newEmail').value.trim();
+            const code = document.getElementById('newCode').value.trim();
+            const errEl = document.getElementById('addError');
+
+            if (!email || !code) { errEl.textContent = 'Vui lòng điền đầy đủ thông tin!'; errEl.style.display = 'block'; return; }
+
+            try {
+                // Get first tenant
+                const ovRes = await fetch(`${API}/admin/overview`);
+                // We'll use the seed endpoint logic — create via direct prisma call via a mini endpoint
+                // Call our new createAffiliate endpoint
+                const res = await fetch(`${API}/admin/affiliates`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Tạo thất bại');
+
+                showToast(`Đã tạo CTV ${code} thành công!`, 'success');
+                closeAddModal();
+                loadData();
+            } catch (e) {
+                errEl.textContent = e.message;
+                errEl.style.display = 'block';
+            }
+        }
+
+        // ====== PAGINATION ======
+        function changePage(dir) {
+            const next = currentPage + dir;
+            if (next < 1 || next > totalPages) return;
+            currentPage = next;
+            loadData();
+        }
+
+        // ====== SEARCH ======
+        function debounceSearch() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                searchQuery = document.getElementById('searchInput').value.trim();
+                currentPage = 1;
+                loadData();
+            }, 400);
+        }
+
+        // ====== TABS ======
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            const allTabs = ['users', 'overview', 'conversions', 'products'];
+            allTabs.forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                if (el) el.style.display = (t === tab) ? 'block' : 'none';
+            });
+            const titles = {
+                users: '👥 Danh sách Cộng Tác Viên',
+                overview: '📊 Tổng quan Hệ thống',
+                conversions: '💰 Duyệt Hoa hồng',
+                products: '📦 Quản lý Sản phẩm',
+            };
+            document.getElementById('topbar-title').textContent = titles[tab] || '';
+            if (tab === 'overview') loadOverview();
+            if (tab === 'conversions') loadConversions(1);
+            if (tab === 'products') loadProducts();
+        }
+
+        // ====== HELPERS ======
+        function fmtVND(n) {
+            if (!n) return '0đ';
+            if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+            if (n >= 1e3) return (n / 1e3).toFixed(0) + 'K';
+            return n.toLocaleString('vi-VN') + 'đ';
+        }
+
+        function showToast(msg, type = 'info') {
+            const t = document.getElementById('toast');
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            t.innerHTML = `${icons[type]} ${msg}`;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ====== CONVERSIONS ======
+        let convPage = 1;
+        let convTotalPages = 1;
+
+        async function loadConversions(page = convPage) {
+            convPage = page;
+            const status = document.getElementById('convStatusFilter').value;
+            const qs = new URLSearchParams({ page, limit: 20, ...(status && { status }) });
+            const tbody = document.getElementById('convBody');
+            tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><span class="spinner"></span></div></td></tr>';
+            try {
+                const res = await fetch(`${API}/admin/conversions?${qs}`);
+                const json = await res.json();
+                convTotalPages = json.pagination.totalPages || 1;
+                document.getElementById('conv-pag-info').textContent =
+                    `${json.pagination.total} bản ghi | Trang ${convPage}/${convTotalPages}`;
+                document.getElementById('convPrev').disabled = convPage <= 1;
+                document.getElementById('convNext').disabled = convPage >= convTotalPages;
+
+                if (!json.data.length) {
+                    tbody.innerHTML = '<tr><td colspan="8"><div class="empty">📦 Không có dữ liệu</div></td></tr>';
+                    return;
+                }
+
+                const statusBadge = s => ({
+                    pending: '<span class="badge" style="background:rgba(251,191,36,.15);color:#fbbf24">⏳ Chờ</span>',
+                    approved: '<span class="badge" style="background:rgba(16,185,129,.15);color:#10b981">✅ Duyệt</span>',
+                    rejected: '<span class="badge" style="background:rgba(244,63,94,.15);color:#f43f5e">❌ Từ chối</span>',
+                    paid: '<span class="badge" style="background:rgba(96,165,250,.15);color:#60a5fa">💰 Đã trả</span>',
+                })[s] || s;
+
+                tbody.innerHTML = json.data.map(c => `
+                    <tr>
+                        <td style="font-family:monospace;font-size:.8rem;color:var(--muted)">${c.orderId}</td>
+                        <td><strong>${c.affiliate?.code || '?'}</strong><br><small style="color:var(--muted)">${c.affiliate?.email || ''}</small></td>
+                        <td style="color:var(--muted);font-size:.82rem">${c.product?.name || '?'}</td>
+                        <td style="font-weight:600">${fmtVND(c.orderAmount)}</td>
+                        <td style="color:var(--green);font-weight:700">+${fmtVND(c.commissionAmount)}</td>
+                        <td>${statusBadge(c.status)}</td>
+                        <td style="color:var(--muted);font-size:.8rem">${new Date(c.createdAt).toLocaleDateString('vi-VN')}</td>
+                        <td>
+                            ${c.status === 'pending' ? `
+                                <button onclick="reviewConversion('${c.id}','approve')" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#10b981;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.8rem;margin-right:4px">✔ Duyệt</button>
+                                <button onclick="reviewConversion('${c.id}','reject')" style="background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);color:#f43f5e;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.8rem">✖ Từ chối</button>
+                            ` : '<span style="color:var(--muted);font-size:.8rem">—</span>'}
+                        </td>
+                    </tr>`).join('');
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="8"><div class="empty" style="color:var(--red)">❌ Lỗi: ${e.message}</div></td></tr>`;
+            }
+        }
+
+        async function reviewConversion(id, action) {
+            const label = action === 'approve' ? 'duyệt' : 'từ chối';
+            if (!confirm(`Xác nhận ${label} hoa hồng này?`)) return;
+            try {
+                const res = await fetch(`${API}/admin/conversions/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+                showToast(`Đã ${label} thành công!`, 'success');
+                loadConversions(convPage);
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        function changeConvPage(dir) {
+            const next = convPage + dir;
+            if (next < 1 || next > convTotalPages) return;
+            loadConversions(next);
+        }
+
+        // ====== PRODUCTS ======
+        function openProductModal(product = null) {
+            document.getElementById('productModal').style.display = 'flex';
+            document.getElementById('productError').style.display = 'none';
+            if (product) {
+                document.getElementById('productModalTitle').textContent = '✏️ Sửa sản phẩm';
+                document.getElementById('editProductId').value = product.id;
+                document.getElementById('pName').value = product.name;
+                document.getElementById('pSlug').value = product.slug;
+                document.getElementById('pDomain').value = product.domain;
+                document.getElementById('pCommType').value = product.commissionType;
+                document.getElementById('pCommValue').value = product.commissionValue;
+                document.getElementById('pCookie').value = product.cookieDuration;
+            } else {
+                document.getElementById('productModalTitle').textContent = '📦 Tạo sản phẩm mới';
+                document.getElementById('editProductId').value = '';
+                ['pName', 'pSlug', 'pDomain', 'pCommValue'].forEach(id => document.getElementById(id).value = '');
+                document.getElementById('pCommType').value = 'percentage';
+                document.getElementById('pCookie').value = '30';
+            }
+        }
+
+        function updateCommLabel() {
+            const type = document.getElementById('pCommType').value;
+            document.getElementById('pCommValueLabel').textContent =
+                type === 'percentage' ? 'Giá trị (0–1, VD: 0.2 = 20%) *' : 'Số tiền cố định (VNĐ) *';
+            document.getElementById('pCommValue').placeholder = type === 'percentage' ? '0.2' : '50000';
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+
+        async function saveProduct() {
+            const errEl = document.getElementById('productError');
+            const editId = document.getElementById('editProductId').value;
+            const payload = {
+                name: document.getElementById('pName').value.trim(),
+                slug: document.getElementById('pSlug').value.trim(),
+                domain: document.getElementById('pDomain').value.trim(),
+                commissionType: document.getElementById('pCommType').value,
+                commissionValue: document.getElementById('pCommValue').value,
+                cookieDuration: document.getElementById('pCookie').value,
+            };
+
+            if (!payload.name || !payload.slug || !payload.domain || !payload.commissionValue) {
+                errEl.textContent = 'Vui lòng điền đủ thông tin!';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const url = editId ? `${API}/admin/products/${editId}` : `${API}/admin/products`;
+                const method = editId ? 'PATCH' : 'POST';
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+                showToast(editId ? 'Cập nhật thành công!' : 'Tạo sản phẩm thành công!', 'success');
+                closeProductModal();
+                loadProducts();
+            } catch (e) {
+                errEl.textContent = e.message;
+                errEl.style.display = 'block';
+            }
+        }
+
+        async function loadProducts() {
+            const tbody = document.getElementById('productBody');
+            tbody.innerHTML = '<tr><td colspan="9"><div class="empty"><span class="spinner"></span></div></td></tr>';
+            try {
+                const res = await fetch(`${API}/admin/products`);
+                const { data } = await res.json();
+                if (!data || !data.length) {
+                    tbody.innerHTML = '<tr><td colspan="9"><div class="empty">📦 Chưa có sản phẩm nào</div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(p => `
+                    <tr id="prod-row-${p.id}">
+                        <td style="font-weight:600">${p.name}</td>
+                        <td style="font-family:monospace;color:var(--teal);font-size:.85rem">${p.slug}</td>
+                        <td style="color:var(--muted)">${p.domain}</td>
+                        <td>${p.commissionType === 'percentage' ? '📊 %' : '💰 Cố định'}</td>
+                        <td style="font-weight:600;color:var(--green)">${p.commissionType === 'percentage' ? (p.commissionValue * 100).toFixed(0) + '%' : fmtVND(p.commissionValue)}</td>
+                        <td>${p.cookieDuration} ngày</td>
+                        <td>${p.isActive ? '<span class="badge" style="background:rgba(16,185,129,.15);color:#10b981">• Active</span>' : '<span class="badge" style="background:rgba(100,116,139,.15);color:#94a3b8">⏸ Off</span>'}</td>
+                        <td>
+                            <span id="apikey-${p.id}" style="font-family:monospace;font-size:.78rem;color:var(--muted);margin-right:6px">${p.apiKey || '—'}</span>
+                            <button onclick="showApiKey('${p.id}')" title="Xem API Key" style="background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fbbf24;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:.75rem">🔑 Xem key</button>
+                        </td>
+                        <td>
+                            <button onclick='openProductModal(${JSON.stringify(p)})'
+                                style="background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3);color:var(--teal);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.8rem;margin-right:4px">✏️ Sửa</button>
+                            <button onclick="toggleProduct('${p.id}',${!p.isActive})" style="background:rgba(100,116,139,.1);border:1px solid rgba(100,116,139,.2);color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.8rem">${p.isActive ? '⏸ Tắt' : '▶ Bật'}</button>
+                        </td>
+                    </tr>`).join('');
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="9"><div class="empty" style="color:var(--red)">❌ Lỗi: ${e.message}</div></td></tr>`;
+            }
+        }
+
+        async function showApiKey(productId) {
+            if (!confirm('Hiển thị full API Key? Chỉ xem khi cần thiết.')) return;
+            try {
+                const res = await fetch(`${API}/admin/products/${productId}/apikey`);
+                const { apiKey, name } = await res.json();
+                const el = document.getElementById(`apikey-${productId}`);
+                el.textContent = apiKey;
+                el.style.color = 'var(--yellow)';
+                // Tự động copy vào clipboard
+                navigator.clipboard.writeText(apiKey).then(() =>
+                    showToast(`Đã copy API Key của "${name}" vào clipboard!`, 'success')
+                );
+                // Ẩn lại sau 30 giây
+                setTimeout(() => {
+                    el.textContent = apiKey.slice(0, 14) + '••••••••';
+                    el.style.color = 'var(--muted)';
+                }, 30000);
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        async function toggleProduct(id, isActive) {
+            try {
+                await fetch(`${API}/admin/products/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isActive })
+                });
+                showToast(isActive ? 'Sản phẩm đã bật!' : 'Sản phẩm đã tắt!', 'info');
+                loadProducts();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>
