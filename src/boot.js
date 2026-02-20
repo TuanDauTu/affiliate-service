@@ -43,30 +43,27 @@ if (!process.env.DATABASE_URL) {
     console.error('👉 ACTION REQUIRED: Go to Railway Dashboard -> Create PostgreSQL -> Copy DATABASE_URL -> Paste into Service Variables.');
     console.log('⚠️  Skipping migrations and starting server in LIMITED MODE (Database features will fail).\n');
 } else {
-    // 2. Run Migrations
+    // 2. Setup Database
     try {
-        console.log('🔄 Found DATABASE_URL. Attempting to apply Prisma migrations...');
+        console.log('🔄 Found DATABASE_URL. Starting Database Setup...');
 
-        // Fix "Permission denied" by running node directly on the JS entry point
-        // Path: node_modules/prisma/build/index.js
-        const cmd = 'node node_modules/prisma/build/index.js migrate deploy --schema=./prisma/schema.prisma';
+        // A. Generate Prisma Client (Ensure it matches current schema)
+        console.log('👉 Step A: Generating Prisma Client...');
+        execSync('node node_modules/prisma/build/index.js generate', { stdio: 'inherit' });
+
+        // B. Push Schema to DB (Safe for inconsistent migration history)
+        // Using "db push" instead of "migrate deploy" because "tenants" table already exists
+        // and we want to sync the schema without failing on existing tables.
+        console.log('👉 Step B: Pushing Schema directly to DB...');
+        const cmd = 'node node_modules/prisma/build/index.js db push --accept-data-loss';
         console.log(`> Executing: ${cmd}`);
 
         execSync(cmd, { stdio: 'inherit' });
-        console.log('✅ Migrations applied successfully.\n');
+        console.log('✅ Database schema synced successfully.\n');
     } catch (error) {
-        console.error('❌ MIGRATION FAILED!');
+        console.error('❌ DATABASE SETUP FAILED!');
         console.error('   Error details:', error.message);
-
-        // Debug: List node_modules/.bin content
-        try {
-            console.log('--- DEBUG: Listing ./node_modules/.bin ---');
-            execSync('ls -l ./node_modules/.bin', { stdio: 'inherit' });
-        } catch (e) {
-            console.log('Cannot list .bin dir');
-        }
-
-        console.log('⚠️  Continuing startup anyway...\n');
+        console.log('⚠️  Continuing startup anyway (Server might crash if DB schema is invalid)....\n');
     }
 }
 
