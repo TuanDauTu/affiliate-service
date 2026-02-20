@@ -8,6 +8,8 @@ const productKeyAuth = require('../middleware/apiKeyAuth');
  * Public — gọi từ browser khi user truy cập link affiliate
  * Body: { productSlug, refCode }
  */
+router.get('/test', (req, res) => res.json({ message: 'Track route is working!' }));
+
 router.post('/click', async (req, res) => {
     const { productSlug, refCode } = req.body;
 
