@@ -1,7 +1,17 @@
 const { execSync } = require('child_process');
+require('dotenv').config(); // Load .env file if present
 
 console.log('\n==================================================');
 console.log('🚀 STARTING AFFILIATE SERVICE BOOT SEQUENCE');
+console.log('==================================================');
+
+// Debug: Print available environment variables (Keys only)
+console.log('Environment Keys:', Object.keys(process.env).filter(k => !k.startsWith('npm_')).join(', '));
+if (process.env.DATABASE_URL) {
+    console.log('✅ DATABASE_URL is present (Length: ' + process.env.DATABASE_URL.length + ')');
+} else {
+    console.log('❌ DATABASE_URL is UNDEFINED');
+}
 console.log('==================================================\n');
 
 // 1. Check Environment
