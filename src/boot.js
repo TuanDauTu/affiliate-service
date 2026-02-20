@@ -47,9 +47,9 @@ if (!process.env.DATABASE_URL) {
     try {
         console.log('🔄 Found DATABASE_URL. Attempting to apply Prisma migrations...');
 
-        // Use direct path to binary to avoid "Permission denied" or "Command not found"
-        // Also add --schema to be explicit
-        const cmd = './node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma';
+        // Fix "Permission denied" by running node directly on the JS entry point
+        // Path: node_modules/prisma/build/index.js
+        const cmd = 'node node_modules/prisma/build/index.js migrate deploy --schema=./prisma/schema.prisma';
         console.log(`> Executing: ${cmd}`);
 
         execSync(cmd, { stdio: 'inherit' });
