@@ -11,6 +11,7 @@ const prisma = require('./prisma');
 const trackRoutes = require('./routes/track');
 const affiliateRoutes = require('./routes/affiliate');
 const adminRoutes = require('./routes/admin');
+const adminAuth = require('./middleware/adminAuth');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -66,8 +67,8 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// Seed (Dev Helper)
-app.get('/api/v1/seed', async (req, res) => {
+// Seed (Dev Helper — Protected by adminAuth)
+app.get('/api/v1/seed', adminAuth, async (req, res) => {
   try {
     const crypto = require('crypto');
 
@@ -198,7 +199,7 @@ app.get('/go/:productSlug', async (req, res) => {
 // Mount Routes
 app.use('/api/v1/track', trackRoutes);
 app.use('/api/v1/affiliate', affiliateRoutes);
-app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/admin', adminAuth, adminRoutes);
 
 
 // 404 Handler

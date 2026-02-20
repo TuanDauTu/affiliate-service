@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "description": "Standalone Affiliate System Microservice",
   "main": "src/server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
-    "start": "node node_modules/prisma/build/index.js migrate deploy && node src/server.js",
+    "start": "prisma migrate deploy && node src/server.js",
     "start:local": "node src/server.js",
     "dev": "nodemon src/server.js",
     "migrate": "npx prisma migrate dev",
-    "migrate:prod": "npx prisma migrate deploy",
-    "postinstall": "npx prisma generate",
+    "migrate:prod": "prisma migrate deploy",
+    "postinstall": "prisma generate",
     "studio": "npx prisma studio"
   },
   "keywords": [
@@ -25,10 +28,10 @@
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "helmet": "^7.1.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "prisma": "^5.22.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0",
-    "prisma": "^5.10.2"
+    "nodemon": "^3.1.0"
   }
 }
