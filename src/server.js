@@ -63,6 +63,7 @@ app.get('/health', async (req, res) => {
     await prisma.$queryRaw`SELECT 1`;
     res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString() });
   } catch (error) {
+    console.error('[Health Check Failed] Error:', error); // Log lỗi chi tiết ra console để debug
     // Nếu chưa config Database, trả về 200 để Railway không kill app (giúp debug dễ hơn)
     if (!process.env.DATABASE_URL) {
       return res.status(200).json({
