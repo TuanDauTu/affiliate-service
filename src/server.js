@@ -63,6 +63,15 @@ app.get('/health', async (req, res) => {
     await prisma.$queryRaw`SELECT 1`;
     res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString() });
   } catch (error) {
+    // Nếu chưa config Database, trả về 200 để Railway không kill app (giúp debug dễ hơn)
+    if (!process.env.DATABASE_URL) {
+      return res.status(200).json({
+        status: 'maintenance',
+        message: 'DATABASE_URL missing. Please configure variables in Railway Dashboard.',
+        database: 'disconnected'
+      });
+    }
+    // Nếu đã config mà lỗi kết nối -> 500 (Lỗi thật)
     res.status(500).json({ status: 'error', database: 'disconnected', error: error.message });
   }
 });
