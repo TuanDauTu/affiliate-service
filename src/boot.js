@@ -46,13 +46,27 @@ if (!process.env.DATABASE_URL) {
     // 2. Run Migrations
     try {
         console.log('🔄 Found DATABASE_URL. Attempting to apply Prisma migrations...');
-        execSync('npx prisma migrate deploy', { stdio: 'inherit' });
+
+        // Use direct path to binary to avoid "Permission denied" or "Command not found"
+        // Also add --schema to be explicit
+        const cmd = './node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma';
+        console.log(`> Executing: ${cmd}`);
+
+        execSync(cmd, { stdio: 'inherit' });
         console.log('✅ Migrations applied successfully.\n');
     } catch (error) {
         console.error('❌ MIGRATION FAILED!');
-        console.error('   This might be due to connection params or firewall.');
         console.error('   Error details:', error.message);
-        console.log('⚠️  Continuing startup to allow debugging via Logs...\n');
+
+        // Debug: List node_modules/.bin content
+        try {
+            console.log('--- DEBUG: Listing ./node_modules/.bin ---');
+            execSync('ls -l ./node_modules/.bin', { stdio: 'inherit' });
+        } catch (e) {
+            console.log('Cannot list .bin dir');
+        }
+
+        console.log('⚠️  Continuing startup anyway...\n');
     }
 }
 
