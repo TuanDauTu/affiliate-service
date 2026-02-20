@@ -89,8 +89,11 @@ router.post('/affiliates', async (req, res) => {
     if (!email || !code) return res.status(400).json({ error: 'Missing email or code' });
 
     try {
-        const tenant = await prisma.tenant.findFirst();
-        if (!tenant) return res.status(400).json({ error: 'No tenant found. Run /api/v1/seed first.' });
+        let tenant = await prisma.tenant.findFirst();
+        // Auto-create tenant if missing
+        if (!tenant) {
+            tenant = await prisma.tenant.create({ data: { name: 'Sức Khỏe Tài Chính' } });
+        }
 
         const affiliate = await prisma.affiliate.create({
             data: { tenantId: tenant.id, email, code: code.toUpperCase(), status: 'active' },
@@ -309,8 +312,11 @@ router.post('/products', async (req, res) => {
 
     try {
         const crypto = require('crypto');
-        const tenant = await prisma.tenant.findFirst();
-        if (!tenant) return res.status(400).json({ error: 'No tenant found. Run /api/v1/seed first.' });
+        let tenant = await prisma.tenant.findFirst();
+        // Auto-create tenant if missing
+        if (!tenant) {
+            tenant = await prisma.tenant.create({ data: { name: 'Sức Khỏe Tài Chính' } });
+        }
 
         // Tự động tạo apiKey unique cho từng product
         const apiKey = 'sk_' + slug.toLowerCase().replace(/[^a-z0-9]/g, '') + '_' + crypto.randomBytes(20).toString('hex');
