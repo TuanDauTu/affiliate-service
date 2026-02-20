@@ -5,7 +5,8 @@ nixPkgs = ["nodejs-18_x", "openssl"]
 cmds = ["npm install --ignore-scripts"]
 
 [phases.build]
-cmds = ["npx prisma generate"]
+# Dùng node chạy trực tiếp file JS của Prisma CLI để tránh lỗi Permission denied của npx / shim binary
+cmds = ["node node_modules/prisma/build/index.js generate"]
 
 [start]
 cmd = "node src/boot.js"
