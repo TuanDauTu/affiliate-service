@@ -1,0 +1,49 @@
+@baseUrl = https://affiliate.suckhoetaichinh.vn
+@adminKey = sk_aff_sktc_2026_secret_change_me
+
+### ⚠️ BƯỚC 0: Khởi tạo hệ thống (Chạy 1 lần duy nhất)
+# Để tạo "Công ty" (Tenant) mặc định. Nếu không chạy bước này, tạo sản phẩm sẽ lỗi.
+GET {{baseUrl}}/api/v1/seed
+X-Admin-Key: {{adminKey}}
+
+### ✅ BƯỚC 1: Tạo Sản Phẩm (Ví dụ: Khóa Học, Ebook...)
+POST {{baseUrl}}/api/v1/admin/products
+Content-Type: application/json
+X-Admin-Key: {{adminKey}}
+
+{
+  "name": "Khóa Học Đầu Tư Chứng Khoán",
+  "slug": "dau-tu-chung-khoan",
+  "domain": "https://suckhoetaichinh.vn/khoa-hoc-ck",
+  "commissionType": "percentage",
+  "commissionValue": 0.25,
+  "cookieDuration": 60
+}
+
+# 💡 Giải thích:
+# - slug: Đường dẫn giới thiệu sẽ là .../go/dau-tu-chung-khoan
+# - commissionValue: 0.25 nghĩa là hoa hồng 25%
+# - cookieDuration: 60 ngày (lưu cookie 2 tháng)
+
+### 🔍 BƯỚC 2: Xem danh sách sản phẩm (Để lấy ID)
+GET {{baseUrl}}/api/v1/admin/products
+X-Admin-Key: {{adminKey}}
+
+### 🔑 BƯỚC 3: Lấy API Key bí mật của sản phẩm
+# Copy ID sản phẩm từ Bước 2 thay vào chỗ [ID_SAN_PHAM]
+GET {{baseUrl}}/api/v1/admin/products/[ID_SAN_PHAM]/apikey
+X-Admin-Key: {{adminKey}}
+
+### 👤 BƯỚC 4: Tạo CTV (Affiliate) Thủ Công
+POST {{baseUrl}}/api/v1/admin/affiliates
+Content-Type: application/json
+X-Admin-Key: {{adminKey}}
+
+{
+  "email": "nguyenvana@gmail.com",
+  "code": "NAM2024"
+}
+
+### 📋 BƯỚC 5: Xem danh sách CTV & Thống kê
+GET {{baseUrl}}/api/v1/admin/affiliates
+X-Admin-Key: {{adminKey}}

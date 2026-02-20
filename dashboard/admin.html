@@ -599,6 +599,13 @@
             border-radius: 3px;
         }
     </style>
+    <script>
+        // AUTH CHECK
+        const token = localStorage.getItem('admin_token');
+        if (!token) {
+            window.location.href = '/dashboard/admin-login.html';
+        }
+    </script>
 </head>
 
 <body>

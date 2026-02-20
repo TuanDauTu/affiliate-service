@@ -127,6 +127,25 @@ app.get('/api/v1/seed', adminAuth, async (req, res) => {
 
 
 
+// Admin Login (Simple Auth)
+app.post('/api/v1/auth/admin-login', (req, res) => {
+  const { username, password } = req.body;
+
+  // Lấy từ biến môi trường (Mặc định: admin / 123456)
+  const adminUser = process.env.ADMIN_USERNAME || 'admin';
+  const adminPass = process.env.ADMIN_PASSWORD || '123456';
+
+  if (username === adminUser && password === adminPass) {
+    return res.json({
+      success: true,
+      token: process.env.AFFILIATE_API_KEY,
+      user: { username: adminUser, role: 'admin' }
+    });
+  }
+
+  return res.status(401).json({ error: 'Sai tên đăng nhập hoặc mật khẩu!' });
+});
+
 /**
  * GET /go/:productSlug?ref=CODE
  * 🔀 Server-side redirect — "Affiliate ở tầng trung gian"
@@ -143,10 +162,11 @@ app.get('/go/:productSlug', async (req, res) => {
   const { productSlug } = req.params;
   const refCode = req.query.ref;
 
-  // Default fallback URL khi không tìm thấy product
+  // Fallback redirect URL
   let redirectUrl = 'https://suckhoetaichinh.vn';
 
   try {
+    // ... (code cũ)
     const product = await prisma.product.findUnique({
       where: { slug: productSlug, isActive: true },
     });
