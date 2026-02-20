@@ -9,6 +9,16 @@ console.log('==================================================');
 const keys = Object.keys(process.env).sort();
 console.log('🔍 All Environment Keys:', keys.filter(k => !k.startsWith('npm_') && !k.startsWith('NIXPACKS_')).join(', '));
 
+// Deep Search for Typo (e.g. "DATABASE_URL " with space)
+const potentialKeys = keys.filter(k => k.includes('DATA') || k.includes('BASE') || k.includes('URL'));
+if (potentialKeys.length > 0) {
+    console.log('\n🕵️ Found similar keys (Potential Typo?):');
+    potentialKeys.forEach(k => {
+        console.log(`   - "${k}" (Length: ${k.length}) -> Value exists? ${!!process.env[k]}`);
+        if (k !== 'DATABASE_URL') console.log('     ⚠️  WARNING: This key looks suspicious!');
+    });
+}
+
 // Check common Railway DB variables
 const dbVars = ['DATABASE_URL', 'POSTGRES_URL', 'DATABASE_PUBLIC_URL', 'PGUSER', 'PGHOST'];
 dbVars.forEach(v => {
