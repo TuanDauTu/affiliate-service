@@ -5,13 +5,26 @@ console.log('\n==================================================');
 console.log('🚀 STARTING AFFILIATE SERVICE BOOT SEQUENCE');
 console.log('==================================================');
 
-// Debug: Print available environment variables (Keys only)
-console.log('Environment Keys:', Object.keys(process.env).filter(k => !k.startsWith('npm_')).join(', '));
-if (process.env.DATABASE_URL) {
-    console.log('✅ DATABASE_URL is present (Length: ' + process.env.DATABASE_URL.length + ')');
-} else {
-    console.log('❌ DATABASE_URL is UNDEFINED');
+// Debug: Print available environment variables (Keys only + checks)
+const keys = Object.keys(process.env).sort();
+console.log('🔍 All Environment Keys:', keys.filter(k => !k.startsWith('npm_') && !k.startsWith('NIXPACKS_')).join(', '));
+
+// Check common Railway DB variables
+const dbVars = ['DATABASE_URL', 'POSTGRES_URL', 'DATABASE_PUBLIC_URL', 'PGUSER', 'PGHOST'];
+dbVars.forEach(v => {
+    if (process.env[v]) {
+        console.log(`✅ ${v} IS SET (Length: ${process.env[v].length})`);
+    } else {
+        console.log(`❌ ${v} is MISSING`);
+    }
+});
+
+// Auto-fix: If DATABASE_URL is missing but POSTGRES_URL exists, use it
+if (!process.env.DATABASE_URL && process.env.POSTGRES_URL) {
+    console.log('⚠️  DATABASE_URL missing, auto-switching to POSTGRES_URL...');
+    process.env.DATABASE_URL = process.env.POSTGRES_URL;
 }
+
 console.log('==================================================\n');
 
 // 1. Check Environment
