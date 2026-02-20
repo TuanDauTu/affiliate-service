@@ -1,12 +1,10 @@
 [phases.setup]
-nixPkgs = ["nodejs-20_x", "openssl"]
+nixPkgs = ["nodejs-18_x", "openssl"]
 
 [phases.install]
-# Thêm --ignore-scripts để tránh chạy prisma generate ở bước này (gây lỗi permission)
 cmds = ["npm install --ignore-scripts"]
 
 [phases.build]
-# Chạy generate ở đây mới an toàn
 cmds = ["npx prisma generate"]
 
 [start]

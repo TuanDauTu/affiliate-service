@@ -4,7 +4,7 @@
   "description": "Standalone Affiliate System Microservice",
   "main": "src/server.js",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "start": "node src/boot.js",
